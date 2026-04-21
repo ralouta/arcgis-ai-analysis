@@ -1,0 +1,12 @@
+[project]
+name = "arcgis-ai-analysis"
+version = "0.1.0"
+description = "ArcGIS as a Geospatial AI Platform — notebooks for object detection, plant identification, field collection, and data review."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "arcgis>=2.4",
+    "arcgis-mapping>=2.0",
+    "ipykernel>=6.29",
+    "ipywidgets>=8.1",
+    "requests>=2.31",
+]

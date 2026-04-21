@@ -1,60 +1,39 @@
 # Environment Setup & Redeploy Guide
 
-**ArcGIS API for Python** — `arcgis` 2.4.3  
-Python 3.11 · conda (Miniforge) · macOS (arm64)
+**ArcGIS API for Python** — `arcgis` ≥ 2.4  
+Python 3.11+ · [uv](https://docs.astral.sh/uv/)
 
 ---
 
 ## Prerequisites
 
-Install Miniforge (if not already installed):
+Install **uv** (if not already installed):
 
 ```bash
-brew install miniforge
-conda init zsh   # then restart your terminal
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ---
 
 ## First-Time Setup
 
-### 1. Create the conda environment
+From the repo root:
 
 ```bash
-conda create -n arcgis-ai python=3.11 -y
+uv sync
 ```
 
-### 2. Install ArcGIS API for Python from Esri's channel
-
-```bash
-conda install -n arcgis-ai -c esri arcgis ipykernel -y
-```
-
-### 3. Activate the environment
-
-```bash
-conda activate arcgis-ai
-```
+This creates a `.venv/` virtual environment and installs all dependencies
+declared in `pyproject.toml` (arcgis, ipykernel, ipywidgets, requests).
 
 ---
 
 ## Redeploy / Rebuild Environment
 
-Use these steps whenever the environment is missing or corrupted.
-
 ```bash
-conda env remove -n arcgis-ai -y
-conda create -n arcgis-ai python=3.11 -y
-conda install -n arcgis-ai -c esri arcgis ipykernel -y
-```
-
----
-
-## Update ArcGIS API to Latest
-
-```bash
-conda activate arcgis-ai
-conda update -c esri arcgis -y
+rm -rf .venv uv.lock
+uv sync
 ```
 
 ---
@@ -62,10 +41,8 @@ conda update -c esri arcgis -y
 ## Verify Installation
 
 ```bash
-conda run -n arcgis-ai python -c "import arcgis; print(arcgis.__version__)"
+uv run python -c "import arcgis; print(arcgis.__version__)"
 ```
-
-Expected output: `2.4.3`
 
 ---
 
@@ -73,10 +50,21 @@ Expected output: `2.4.3`
 
 1. Open any `.ipynb` notebook.
 2. Click **Select Kernel** (top-right).
-3. Choose **Python Environments** → `arcgis-ai (Python 3.11)`.
+3. Choose **Python Environments** → `.venv (Python 3.11)` (the local venv).
 
 Or via the Command Palette:  
-`Python: Select Interpreter` → select the `arcgis-ai` conda env.
+`Python: Select Interpreter` → select `./.venv/bin/python`.
+
+---
+
+## Legacy: conda setup
+
+If you prefer conda over uv:
+
+```bash
+conda create -n arcgis-ai python=3.11 -y
+conda install -n arcgis-ai -c esri arcgis ipykernel ipywidgets requests -y
+```
 
 ---
 
