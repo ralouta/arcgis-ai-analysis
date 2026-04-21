@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+*copy*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Videos (too large for GitHub)
+videos/
+
+# Secrets / runtime
+item_registry.json
+
+# IDE
+.idea/
+.vscode/
+
+# Build / lock (regenerated via uv sync)
+uv.lock
