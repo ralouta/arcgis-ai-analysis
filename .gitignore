@@ -16,8 +16,9 @@ Thumbs.db
 # Videos (too large for GitHub)
 videos/
 
-# Secrets / runtime
+# Secrets / runtime (created by notebooks, environment-specific)
 item_registry.json
+item_registry_staging.json
 
 # Temp files
 temp_exb_config.json
