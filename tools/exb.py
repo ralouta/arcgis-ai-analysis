@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 
-from arcgis.gis import GIS
+from arcgis.gis import GIS, Item
 
 
 def update_datasources(
@@ -101,3 +103,54 @@ def update_datasources(
             config_str = config_str.replace(old_ref, new_ref)
 
     return json.loads(config_str)
+
+
+def copy_resources(source_item: Item, target_item: Item) -> int:
+    """Copy all item resources and thumbnail from source to target.
+
+    Parameters
+    ----------
+    source_item : Item
+        The template item to copy resources from.
+    target_item : Item
+        The newly created item to copy resources to.
+
+    Returns
+    -------
+    int
+        Number of resources copied.
+    """
+    resource_list = source_item.resources.list()
+    copied = 0
+
+    if resource_list:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for entry in resource_list:
+                res_path = entry["resource"]
+                dirname = os.path.dirname(res_path) or None
+                basename = os.path.basename(res_path)
+
+                source_item.resources.get(
+                    file=res_path,
+                    try_json=False,
+                    out_folder=tmpdir,
+                    out_file_name=basename,
+                )
+                local_path = os.path.join(tmpdir, basename)
+
+                target_item.resources.add(
+                    file=local_path,
+                    folder_name=dirname,
+                    file_name=basename,
+                )
+                os.remove(local_path)
+                copied += 1
+
+    # Copy thumbnail separately (not part of resources)
+    if source_item.thumbnail:
+        with tempfile.TemporaryDirectory() as thumb_dir:
+            thumb_path = source_item.download_thumbnail(save_folder=thumb_dir)
+            if thumb_path and os.path.exists(thumb_path):
+                target_item.update(thumbnail=thumb_path)
+
+    return copied
