@@ -1,0 +1,40 @@
+{
+  "base_layer": {
+    "item_id": "f50042259f9a44b3ac0a2cdeaf07a1c9",
+    "title": "Plant Identification - AI Staging",
+    "url": "https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Plant_Identification_AI_Staging_202604221218/FeatureServer/0",
+    "schema": "Plant Identification"
+  },
+  "views": {
+    "collector": {
+      "item_id": "09db7954ff6c4e32852e58ed2ce4eecd",
+      "title": "Plant Identification - AI Staging - Collector - STAGING"
+    },
+    "approver": {
+      "item_id": "4e2aacfa14d44ffebe055db2bd4d1012",
+      "title": "Plant Identification - AI Staging - Approver - STAGING"
+    },
+    "public": {
+      "item_id": "4c6e3531bda94435991f19319cd1f078",
+      "title": "Plant Identification - AI Staging - Public - STAGING"
+    },
+    "pending": {
+      "item_id": "30309b0acec441bb9eaf202a6121ba31",
+      "title": "Plant Identification - AI Staging - Pending - STAGING"
+    }
+  },
+  "web_maps": {
+    "collector": {
+      "item_id": "2f48274089234616939a54f779d69e3f",
+      "title": "Plant Identification - AI Staging - Collector Map - STAGING"
+    },
+    "approver": {
+      "item_id": "4affb92a15f342f281760a830bf0f17f",
+      "title": "Plant Identification - AI Staging - Approver Map - STAGING"
+    },
+    "public": {
+      "item_id": "2245ea032b414e57b531d2097b4c773a",
+      "title": "Plant Identification - AI Staging Map - STAGING"
+    }
+  }
+}

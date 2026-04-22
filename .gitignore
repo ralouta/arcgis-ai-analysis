@@ -18,6 +18,7 @@ videos/
 
 # Secrets / runtime
 item_registry.json
+prompts.md
 
 # IDE
 .idea/
