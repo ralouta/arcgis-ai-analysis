@@ -18,6 +18,9 @@ videos/
 
 # Secrets / runtime
 item_registry.json
+
+# Temp files
+temp_exb_config.json
 prompts.md
 
 # IDE

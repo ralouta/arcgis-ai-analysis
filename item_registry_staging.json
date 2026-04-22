@@ -3,7 +3,9 @@
     "item_id": "f50042259f9a44b3ac0a2cdeaf07a1c9",
     "title": "Plant Identification - AI Staging",
     "url": "https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Plant_Identification_AI_Staging_202604221218/FeatureServer/0",
-    "schema": "Plant Identification"
+    "schema": "Plant Identification",
+    "folder": "1657ba943f4545198c54797359dbb665",
+    "folder_name": "Plant Identification - Staging"
   },
   "views": {
     "collector": {
