@@ -22,6 +22,7 @@ from views.manage import (
     build_popup,
     create_webmap,
     copy_fieldmaps_config,
+    copy_approver_config,
     add_pending_to_webmap,
     set_thumbnail,
     load_registry,
