@@ -408,49 +408,101 @@ def create_webmap(
     return wm_item
 
 
+def _pick_main_op_layer(ops: list) -> dict | None:
+    """Return the first operational layer whose title does not contain
+    'pending' (case-insensitive), falling back to the first entry if
+    every layer is tagged pending or the list is empty."""
+    for ol in ops or []:
+        if "pending" not in str(ol.get("title", "")).lower():
+            return ol
+    return (ops[0] if ops else None)
+
+
 # ── Copy Field Maps configuration from a template web map ────────────
 
 def copy_fieldmaps_config(gis: GIS, source_wm_id: str, target_wm_id: str):
     """Copy Field Maps form config (Arcade expressions, formInfo, templates)
-    from a source web map's first operational layer to the target web map's
-    first operational layer.
+    from a source web map's main (non-Pending) operational layer to the
+    target web map's main (non-Pending) operational layer.
 
     This lets a staging Collector map inherit the production map's Arcade
     calculations, feature templates, and form layout without manual setup.
 
-    Returns the updated target web map ``Item``.
+    Returns ``(target_item, copied_keys)``.
     """
     src_item = gis.content.get(source_wm_id)
     src_data = src_item.get_data()
     tgt_item = gis.content.get(target_wm_id)
     tgt_data = tgt_item.get_data()
 
-    src_ol = src_data.get("operationalLayers", [{}])[0]
-    tgt_ol = tgt_data.get("operationalLayers", [{}])[0]
+    src_ol = _pick_main_op_layer(src_data.get("operationalLayers", []))
+    tgt_ol = _pick_main_op_layer(tgt_data.get("operationalLayers", []))
+    if not src_ol or not tgt_ol:
+        return tgt_item, []
 
-    # Keys that carry Field Maps / Arcade / form configuration
-    _config_keys = ["formInfo", "editingInfo"]
-    _layer_def_keys = ["expressionInfos"]
+    copied: list[str] = []
 
-    copied = []
-    for key in _config_keys:
+    # Keys that carry Field Maps / Arcade / form configuration.
+    # Note: ``editingInfo`` carries the source layer's edit timestamps and
+    # must NOT be copied — doing so confuses Field Maps offline sync.
+    for key in ("formInfo", "templates"):
         if key in src_ol:
             tgt_ol[key] = src_ol[key]
             copied.append(key)
 
     src_ld = src_ol.get("layerDefinition", {})
     tgt_ld = tgt_ol.setdefault("layerDefinition", {})
-    for key in _layer_def_keys:
+    for key in ("expressionInfos",):
         if key in src_ld:
             tgt_ld[key] = src_ld[key]
             copied.append(f"layerDefinition.{key}")
 
-    # Copy feature templates if present
-    if "templates" in src_ol:
-        tgt_ol["templates"] = src_ol["templates"]
-        copied.append("templates")
+    tgt_item.update(data=json.dumps(tgt_data))
+    return tgt_item, copied
 
-    tgt_data["operationalLayers"][0] = tgt_ol
+
+# ── Copy Approver config (popup + Field Maps) from a template web map ──
+
+def copy_approver_config(gis: GIS, source_wm_id: str, target_wm_id: str):
+    """Copy popup, Field Maps form, templates, and Arcade expressions from
+    a template Approver web map's main (non-Pending) operational layer to
+    the target Approver web map's main (non-Pending) operational layer.
+
+    The Pending layer is skipped on both source and target so the
+    grey-dot layer keeps its empty popup.
+
+    Returns ``(target_item, copied_keys)``.
+    """
+    src_item = gis.content.get(source_wm_id)
+    tgt_item = gis.content.get(target_wm_id)
+    src_data = src_item.get_data()
+    tgt_data = tgt_item.get_data()
+
+    src_ol = _pick_main_op_layer(src_data.get("operationalLayers", []))
+    tgt_ol = _pick_main_op_layer(tgt_data.get("operationalLayers", []))
+    if not src_ol or not tgt_ol:
+        return tgt_item, []
+
+    copied: list[str] = []
+
+    # Top-level operational-layer keys carrying popup + form config.
+    # ``editingInfo`` intentionally excluded — carries source edit
+    # timestamps that would confuse Field Maps offline sync.
+    for key in ("popupInfo", "formInfo", "templates"):
+        if key in src_ol:
+            tgt_ol[key] = src_ol[key]
+            copied.append(key)
+
+    # layerDefinition sub-keys for Arcade + subtypes.
+    # ``typeIdField`` must accompany ``types`` so clients can resolve
+    # which field drives the subtype selection.
+    src_ld = src_ol.get("layerDefinition", {})
+    tgt_ld = tgt_ol.setdefault("layerDefinition", {})
+    for key in ("expressionInfos", "types", "typeIdField", "defaultType"):
+        if key in src_ld:
+            tgt_ld[key] = src_ld[key]
+            copied.append(f"layerDefinition.{key}")
+
     tgt_item.update(data=json.dumps(tgt_data))
     return tgt_item, copied
 
