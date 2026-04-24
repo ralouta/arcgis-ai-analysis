@@ -30,3 +30,10 @@ prompts.md
 
 # Build / lock (regenerated via uv sync)
 uv.lock
+
+# Local agent config (not part of repo)
+.github/agents/
+
+# ExB debug exports
+exb_config_before.json
+exb_config_after.json
